@@ -1,0 +1,43 @@
+// In the name of Alah, the most merciful, the most gracious
+#include <bits/stdc++.h>
+using namespace std;
+#define mh ios::sync_with_stdio(false); cin.tie(0);
+#define MOD 1000000007
+
+const int B = 21;
+const int N = (1 << B);
+
+int dp[B + 1][N], a[B][B], n;
+
+int main()
+{
+	mh
+
+	cin >> n;
+
+	for (int i = 0; i < n; ++i)
+		for (int j = 0; j < n; ++j)
+			cin >> a[i][j];
+
+	memset(dp, 0, sizeof(dp));
+	dp[0][0] = 1;
+
+	for (int i = 0; i < n; i++) {
+		for (int mask = 0; mask < (1 << n); ++mask)
+		{
+			if (dp[i][mask] == 0) continue;
+			for (int k = 0; k < n ; ++k)
+			{
+				if (((mask >> k) & 1) == 0 and a[i][k] == 1) {
+					int new_mask = mask | (1 << k);
+					dp[i + 1][new_mask] += dp[i][mask];
+					if (dp[i + 1][new_mask] >= MOD) dp[i + 1][new_mask] -= MOD;
+				}
+			}
+		}
+	}
+
+	cout << dp[n][(1 << n) - 1] << '\n';
+
+	return 0;
+}
