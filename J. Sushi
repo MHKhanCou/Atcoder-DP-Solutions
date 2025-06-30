@@ -1,0 +1,64 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+#define ll long long
+#define ld double
+#define vl vector<ll>
+#define mh ios::sync_with_stdio(false); cin.tie(0);
+#define cinv(v) for (auto &it : v) cin >> it;
+#define all(v) v.begin(), v.end()
+#define nl '\n'
+
+const ll N = 305;
+ld dp[N][N][N];
+ll n;
+
+// Expected moves to finish given counts of 1-, 2-, and 3-piece groups left
+ld func(ll c1, ll c2, ll c3) {
+    if (c1 < 0 || c2 < 0 || c3 < 0) return 0.0;
+    if (c1 + c2 + c3 == 0) return 0.0;  // no sushi left
+
+    if (dp[c1][c2][c3] >= -0.5) return dp[c1][c2][c3];
+
+    ld tot = c1 + c2 + c3;
+    ld zero = n - tot;  // empty plates
+
+    ld expected_moves = 0.0;
+
+    // Picking empty plate (waste move)
+    expected_moves += zero / n;
+
+    // Picking a 1-piece plate: after eating, that group disappears
+    if (c1 > 0) expected_moves += func(c1 - 1, c2, c3) * (c1 / n);
+
+    // Picking a 2-piece plate: after eating, it becomes a 1-piece plate
+    if (c2 > 0) expected_moves += func(c1 + 1, c2 - 1, c3) * (c2 / n);
+
+    // Picking a 3-piece plate: after eating, it becomes a 2-piece plate
+    if (c3 > 0) expected_moves += func(c1, c2 + 1, c3 - 1) * (c3 / n);
+
+    // Normalize because we counted only moves when non-empty plates are picked
+    expected_moves *= n / tot;
+
+    return dp[c1][c2][c3] = expected_moves;
+}
+
+int main() {
+    mh
+    cin >> n;
+    vl a(n);
+    cinv(a);
+
+    ld total_pieces = accumulate(all(a), 0.0L);
+
+    ll one = count(all(a), 1);
+    ll two = count(all(a), 2);
+    ll three = count(all(a), 3);
+
+    memset(dp, -1, sizeof(dp));
+    ld expected_waste = func(one, two, three);
+
+    // Total expected moves = total sushi pieces + expected waste moves
+    cout << fixed << setprecision(12) << expected_waste + total_pieces << nl;
+    return 0;
+}
