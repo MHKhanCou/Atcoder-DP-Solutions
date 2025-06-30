@@ -1,0 +1,50 @@
+// In the name of Alah, the most merciful, the most gracious
+#include <bits/stdc++.h>
+using namespace std;
+
+#define ll long long
+#define vl vector<ll>
+#define mh ios::sync_with_stdio(false); cin.tie(0);
+#define nl '\n'
+
+const ll N = 1e5 + 5;
+
+ll weight[101], value[101];
+ll dp[N][101];
+
+// dp[val][index] = minimum total weight to achieve value 'val' using first 'index' items
+ll knapsack(int val, int index) {
+    if (val == 0) return 0;            // 0 value requires 0 weight
+    if (index == 0) return 1e18;       // no items left, can't achieve positive val, return INF
+    ll &an = dp[val][index];
+    if (~an) return an;
+    an = knapsack(val, index - 1);     // skip current item
+    if (val >= value[index])           // try to take current item if possible
+        an = min(an, weight[index] + knapsack(val - value[index], index - 1));
+    return an;
+}
+
+void solve() {
+    int n, w;
+    cin >> n >> w;
+
+    for (int i = 1; i <= n; ++i) {
+        cin >> weight[i] >> value[i];
+    }
+    memset(dp, -1, sizeof(dp));
+
+    int ans = 0;
+
+    // Try all possible values from 1 to max total value (n * 1000)
+    // Find the maximum value whose minimum weight <= capacity w
+    for (int i = 1; i <= n * 1000; ++i) {
+        if (knapsack(i, n) <= w) ans = i;
+    }
+    cout << ans << nl;
+}
+
+int main() {
+    mh
+    solve();
+    return 0;
+}
