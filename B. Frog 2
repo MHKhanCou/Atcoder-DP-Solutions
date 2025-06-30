@@ -1,0 +1,35 @@
+// In the name of Alah, the most merciful, the most gracious
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define vl vector<ll>
+#define mh ios::sync_with_stdio(false); cin.tie(0);
+#define tst int t;cin>>t;while(t--)
+#define nl '\n'
+
+const ll N = 1e5 + 5;
+vl dp(N, -1);
+
+int k;
+
+ll func(int id, vl &a) {
+	if (id <= 0) return 0;
+	if (dp[id] != -1) return dp[id];
+	ll cost = 1e18;
+	for (int i = 1; i <= k; i++) {
+		if (id >= i)
+			cost = min(cost, abs(a[id] - a[id - i]) + func(id - i, a));
+	}
+	return dp[id] = cost;
+}
+
+int main()
+{
+	mh
+	int n;
+	cin >> n >> k;
+	vector<ll> a(n);
+	for (int i = 0; i < n; ++i) cin >> a[i];
+	cout << func(n - 1, a) << nl;
+	return 0;
+}
