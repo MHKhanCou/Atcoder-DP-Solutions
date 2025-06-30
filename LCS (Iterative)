@@ -1,0 +1,56 @@
+// In the name of Alah, the most merciful, the most gracious
+// Classic iterative Longest Common Subsequence (LCS) solution
+// dp[i][j]: length of LCS for s[1..i] and t[1..j]
+// Backtracking reconstructs one LCS sequence
+
+#include <bits/stdc++.h>
+using namespace std;
+
+#define ll int
+#define pb push_back
+#define vl vector<ll>
+#define mh ios::sync_with_stdio(false); cin.tie(0);
+#define nl '\n'
+#define rep(i, n) for (int i = 0; i < (n); ++i)
+
+const ll N = 3005;
+
+ll dp[N][N];
+string s, t;
+
+int main() {
+    mh
+    cin >> s >> t;
+    int n = (int)s.size(), m = (int)t.size();
+
+    // 1-based indexing to simplify DP transitions
+    s = "$" + s;
+    t = "$" + t;
+
+    // Build the dp table iteratively
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            if (s[i] == t[j]) dp[i][j] = 1 + dp[i - 1][j - 1];
+            else dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+        }
+    }
+
+    // Reconstruct the LCS string by backtracking
+    int i = n, j = m;
+    string ans = "";
+    while (i > 0 && j > 0) {
+        if (s[i] == t[j]) {
+            ans.pb(s[i]);
+            i--, j--;
+        } else if (dp[i - 1][j] >= dp[i][j - 1]) {
+            i--;
+        } else {
+            j--;
+        }
+    }
+
+    reverse(ans.begin(), ans.end());
+    cout << ans << nl;
+
+    return 0;
+}
