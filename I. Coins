@@ -1,0 +1,40 @@
+// In the name of Alah, the most merciful, the most gracious
+#include <bits/stdc++.h>
+using namespace std;
+
+#define ll long long
+#define mh ios::sync_with_stdio(false); cin.tie(0);
+#define nl '\n'
+#define ld long double
+
+const ll N = 3005;
+
+bool vis[N][N];
+ld dp[N][N], a[N];
+int n;
+
+// Returns probability of having more heads than tails after tossing coins from pos down to 1
+ld func(int pos, int head)
+{
+    if (pos <= 0) {
+        return (head > n - head) ? 1.0 : 0.0;
+    }
+    if (vis[pos][head]) return dp[pos][head];
+
+    ld ans = 0;
+    ans += a[pos] * func(pos - 1, head + 1);      // current coin is head
+    ans += (1.0 - a[pos]) * func(pos - 1, head);  // current coin is tail
+
+    vis[pos][head] = true;
+    return dp[pos][head] = ans;
+}
+
+int main()
+{
+    mh
+    cin >> n;
+    for (int i = 1; i <= n; ++i) cin >> a[i];
+
+    cout << fixed << setprecision(10) << func(n, 0) << nl;
+    return 0;
+}
