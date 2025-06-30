@@ -1,0 +1,46 @@
+// In the name of Alah, the most merciful, the most gracious
+#include <bits/stdc++.h>
+using namespace std;
+
+#define ll long long
+#define mh ios::sync_with_stdio(false); cin.tie(0);
+#define nl '\n'
+
+const int N = 1e5 + 5;
+
+int a[N], dp[N];
+int n;
+
+// func(x) returns 1 if the current player has a winning strategy with x stones
+int func(ll x)
+{
+    if (x == 0) return 0; // No stones left, current player loses
+    int &an = dp[x];
+    if (~an) return an;
+
+    an = 1; // Assume current position is winning
+    for (int i = n; i >= 1; i--)
+    {
+        if (a[i] <= x)
+            an &= func(x - a[i]); // If there's any move that makes opponent lose, I win
+    }
+
+    return an = an ^ 1; // If all moves were winning for opponent, current loses
+}
+
+int main()
+{
+    mh
+    ll k;
+    cin >> n >> k;
+    for (int i = 1; i <= n; i++) cin >> a[i];
+
+    memset(dp, -1, sizeof(dp));
+
+    int ans = func(k);
+
+    // If starting player can win from k stones, print First, else Second
+    cout << (ans ? "First" : "Second") << nl;
+
+    return 0;
+}
