@@ -1,0 +1,57 @@
+// In the name of Alah, the most merciful, the most gracious
+#include <bits/stdc++.h>
+using namespace std;
+
+#define ll long long
+const int N = 2e6 + 5;
+const ll MOD = 998244353;
+
+vector<int> g[N];
+
+void solve() {
+    int n, m;
+    cin >> n >> m;
+
+    vector<int> indeg(n + 1), dp(n + 1, -1);
+
+    // Build graph and indegree array
+    for (int i = 0; i < m; i++) {
+        int a, b;
+        cin >> a >> b;
+        g[a].push_back(b);
+        indeg[b]++;
+    }
+
+    queue<int> q;
+
+    // Start with all nodes with indegree 0
+    for (int i = 1; i <= n; ++i) {
+        if (indeg[i] == 0) {
+            q.push(i);
+            dp[i] = 0;  // Longest path starting at source is 0
+        }
+    }
+
+    int ans = 1;
+
+    // Topological order processing using BFS
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        for (int v : g[u]) {
+            // Update longest path to v through u
+            dp[v] = max(dp[v], dp[u] + 1);
+            ans = max(ans, dp[v]);
+            // Decrement indegree and push if zero
+            if (--indeg[v] == 0) q.push(v);
+        }
+    }
+
+    cout << ans << "\n";
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    solve();
+    return 0;
+}
