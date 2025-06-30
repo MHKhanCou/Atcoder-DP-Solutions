@@ -1,0 +1,60 @@
+// In the name of Alah, the most merciful, the most gracious
+#include <bits/stdc++.h>
+using namespace std;
+
+#define ll long long
+#define pb push_back
+#define vl vector<ll>
+#define mh ios::sync_with_stdio(false); cin.tie(0);
+#define nl '\n'
+#define loop(i,a,b) for (int i=a; i <= b; ++i)
+
+const int N = 1e5 + 5;
+const int INF = 1e10;
+const int MOD = 1000000007;
+
+vector<int> g[N];
+
+int func(int x, int p, vector<int> &dp)
+{
+    int &an = dp[x];
+    if (~an) return an;   // memoization
+
+    an = 0;
+
+    for (auto &it : g[x])
+    {
+        if (it == p) continue;
+        an = max(an, func(it, x, dp) + 1);
+    }
+    return an;
+}
+
+void solve()
+{
+    int n, m;
+    cin >> n >> m;
+    vector<int> dp(n + 2, -1);
+
+    loop(_, 1, m)
+    {
+        int u, v;
+        cin >> u >> v;
+        g[u].pb(v);
+    }
+
+    int ans = 0;
+
+    loop(i, 1, n)
+    {
+        ans = max(ans, func(i, 0, dp));
+    }
+    cout << ans << nl;
+}
+
+int main()
+{
+    mh
+    solve();
+    return 0;
+}
