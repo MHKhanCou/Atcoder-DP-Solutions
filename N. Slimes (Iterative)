@@ -1,0 +1,41 @@
+// In the name of Alah, the most merciful, the most gracious
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define mh ios::sync_with_stdio(false); cin.tie(0);
+#define nl '\n'
+
+const ll N = 400 + 5;
+
+ll dp[N][N], sum[N], a[N], n;
+
+int main()
+{
+	mh
+	cin >> n;
+
+	for (int i = 1; i <= n ; ++i)
+	{
+		cin >> a[i];
+		sum[i] += sum[i - 1] + a[i];
+	}
+
+	memset(dp, 0, sizeof(dp));
+
+	for (int i = n; i >= 1 ; --i)
+	{
+		for (int j = 1; j <= n; ++j)
+		{
+			if (i >= j) continue;
+			ll subArraySum = sum[j] - sum[i - 1];
+			dp[i][j] = 1e18;
+			for (int k = i; k < j; k++) {
+				dp[i][j] = min(dp[i][j], dp[i][k] + dp[k + 1][j] + subArraySum);
+			}
+		}
+	}
+
+	cout << dp[1][n] << nl;
+
+	return 0;
+}
