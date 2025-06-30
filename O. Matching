@@ -1,0 +1,47 @@
+// In the name of Alah, the most merciful, the most gracious
+#include <bits/stdc++.h>
+using namespace std;
+#define mh ios::sync_with_stdio(false); cin.tie(0);
+#define MOD 1000000007
+
+const int B = 21;
+const int N = (1 << B);
+
+int dp[B][N], a[B][B], n;
+
+inline int popCnt(int x) { return __builtin_popcount(x); }
+
+int func(int id, int x) {
+
+	if (popCnt(x) == n) return 1;
+	int &an = dp[id][x];
+	if (~an) return an;
+
+	an = 0;
+
+	for (int j = 0; j < n ; ++j)
+	{
+		if (a[id][j] == 1 and ((x >> j) & 1) == 0) {
+			an += func(id + 1, x | (1 << j));
+			an %= MOD;
+		}
+	}
+
+	return an;
+}
+
+int main()
+{
+	mh
+
+	cin >> n;
+
+	for (int i = 0; i < n; ++i)
+		for (int j = 0; j < n ; ++j)
+			cin >> a[i][j];
+
+	memset(dp, -1, sizeof(dp));
+	cout << func(0, 0) << '\n';
+
+	return 0;
+}
