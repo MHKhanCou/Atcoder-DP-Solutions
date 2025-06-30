@@ -1,0 +1,34 @@
+// In the name of Alah, the most merciful, the most gracious
+#include <bits/stdc++.h>
+using namespace std;
+
+#define ll long long
+#define nl '\n'
+#define mh ios::sync_with_stdio(false); cin.tie(0);
+
+const int N = 1e5 + 5;
+const ll inf = 1e18;
+
+vector<vector<ll>> dp(N, vector<ll>(110, inf));
+vector<ll> w(110), v(110);
+
+ll func(ll taka, ll id) {
+    if(taka <= 0 || id <= 0) return 0;
+    if(dp[taka][id] != inf) return dp[taka][id];
+    ll x = func(taka, id - 1);
+    if(taka >= w[id]) x = max(x, func(taka - w[id], id - 1) + v[id]);
+    return dp[taka][id] = x;
+}
+
+void solve() {
+    ll n, taka;
+    cin >> n >> taka;
+    for(int i = 1; i <= n; ++i) cin >> w[i] >> v[i];
+    cout << func(taka, n) << nl;
+}
+
+int main() {
+    mh
+    solve();
+    return 0;
+}
