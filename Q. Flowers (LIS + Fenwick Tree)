@@ -1,0 +1,54 @@
+// In the name of Alah, the most merciful, the most gracious
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define mh ios::sync_with_stdio(false); cin.tie(0);
+#define nl '\n'
+
+struct BIT {
+	vector<ll> bit;
+	int n;
+	BIT(int _n) {
+		n = _n + 2;
+		bit.resize(n, 0);
+	}
+	void update(int i, ll val) {
+		while (i < n) {
+			bit[i] = max(bit[i], val);
+			i += (i & -i);
+		}
+	}
+	ll query(int i) {
+		ll res = 0;
+		while (i > 0) {
+			res = max(res, bit[i]);
+			i -= (i & -i);
+		}
+		return res;
+	}
+};
+
+int main()
+{
+	mh
+	int n;
+	cin >> n;
+
+	vector<int> height(n);
+	vector<ll> beauty(n);
+
+	for (int i = 0; i < n; ++i) cin >> height[i];
+	for (int i = 0; i < n; ++i) cin >> beauty[i];
+
+	BIT bit(n);
+
+	for (int i = 0; i < n; ++i) {
+		int h = height[i];
+		ll best = bit.query(h - 1);            // max beauty of heights < h
+		bit.update(h, best + beauty[i]);
+	}
+
+	cout << bit.query(n) << nl;
+
+	return 0;
+}
