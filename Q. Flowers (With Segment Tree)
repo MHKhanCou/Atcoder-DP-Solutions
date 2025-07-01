@@ -1,0 +1,63 @@
+// In the name of Alah, the most merciful, the most gracious
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define mh ios::sync_with_stdio(false); cin.tie(0);
+#define nl '\n'
+
+struct ST {
+	#define lc (nd << 1)
+	#define rc ((nd << 1) | 1)
+	vector<ll> tree;
+
+	ST(int n) { tree.resize(4 * n, 0); }
+
+	ll query(int nd, int b, int e, int l, int r) {
+		if (r < b || l > e) return 0;
+		if (l <= b && r >= e) return tree[nd];
+		int mid = (b + e) >> 1;
+		return max(query(lc, b, mid, l, r), query(rc, mid + 1, e, l, r));
+	}
+
+	void update(int nd, int b, int e, int l, int r, ll val) {
+		if (r < b || l > e) return;
+		if (l <= b && r >= e) {
+			tree[nd] = val;
+			return;
+		}
+		int mid = (b + e) >> 1;
+		update(lc, b, mid, l, r, val);
+		update(rc, mid + 1, e, l, r, val);
+		tree[nd] = max(tree[lc] , tree[rc]);
+	}
+};
+
+int main()
+{
+	mh
+
+	int n;
+	cin >> n;
+
+	ST st(n); // Segment tree over heights
+
+	vector<int> height(n), beauty(n);
+
+	for (int i = 0; i < n; ++i) cin >> height[i];
+	for (int i = 0; i < n; ++i) cin >> beauty[i];
+
+	// DP[h] = max beauty sum ending at height h
+	// For each flower, find best dp before h[i], then update dp[h[i]]
+	for (int i = 0; i < n; ++i) {
+		ll h = height[i], b = beauty[i];
+		// Get best dp value for heights less than h
+		ll prev = st.query(1, 1, n, 1, h - 1);
+		// Update dp[h] with b + prev if it's better
+		st.update(1, 1, n, h, h, b + prev);
+	}
+
+	// Final answer = max(dp[h]) over all heights
+	cout << st.query(1, 1, n, 1, n) << nl;
+
+	return 0;
+}
