@@ -1,0 +1,51 @@
+// In the name of Alah, the most merciful, the most gracious
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define pb push_back
+#define vl vector<ll>
+#define mh ios::sync_with_stdio(false); cin.tie(0);
+#define nl '\n'
+
+const ll N = 1e5 + 5;
+const int MOD = 1e9 + 7;
+
+vector<int> g[N];
+int dp[N][2];
+
+// dp[u][0]: ways to color subtree at u when u is white
+// dp[u][1]: ways to color subtree at u when u is black
+// Why multiply? At each node u, the choices you make for each child v are independent
+
+void dfs(int u, int p) {
+    dp[u][0] = 1;
+    dp[u][1] = 1;
+    for (int v : g[u]) {
+        if (v == p) continue;
+        dfs(v, u);
+        // If u is white, child v can be white or black → multiply by (dp[v][0] + dp[v][1])
+        dp[u][0] = (ll)dp[u][0] * (dp[v][0] + dp[v][1]) % MOD;
+        // If u is black, child v must be white → multiply by dp[v][0]
+        dp[u][1] = (ll)dp[u][1] * dp[v][0] % MOD;
+    }
+}
+
+int main()
+{
+    mh
+    int n;
+    cin >> n;
+    for (int i = 1, a, b; i < n; ++i)
+    {
+        cin >> a >> b;
+        g[a].push_back(b);
+        g[b].push_back(a);
+    }
+
+    dfs(1, 0);
+
+    // Total ways = root white + root black
+    cout << (dp[1][0] + dp[1][1]) % MOD << nl;
+
+    return 0;
+}
