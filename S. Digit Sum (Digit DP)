@@ -1,0 +1,47 @@
+// In the name of Alah, the most merciful, the most gracious
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define mh ios::sync_with_stdio(false); cin.tie(0);
+#define nl '\n'
+#define MOD 1000000007
+
+const int N = 1e5 + 5;
+
+int dp[N][101][2], k, d;
+
+string num;
+
+// dp[pos][sum][isSmall]
+// pos     → current digit position (0-indexed from left)
+// sum     → current digit-sum modulo d
+// isSmall → whether we've already used a smaller digit than num[pos]
+
+int DigitDP(int pos, int sum, int isSmall) {
+	if (pos == k) return (sum == 0); // base case: check if sum % d == 0
+	int &an = dp[pos][sum][isSmall];
+	if (~an) return an;              // memoized state
+	an = 0;
+	int lo = 0, hi = num[pos] - '0';
+	if (isSmall) hi = 9;            // if already smaller, can use any digit
+	for (int i = lo; i <= hi; ++i) {
+		an += DigitDP(pos + 1, (sum + i) % d, isSmall | (i < hi));
+		if (an >= MOD) an -= MOD;
+	}
+	return an;
+}
+
+
+int main()
+{
+	mh
+	cin >> num >> d;
+	k = num.size();
+	memset(dp, -1, sizeof(dp));
+
+	int ans = DigitDP(0, 0, 0) - 1;
+	if (ans < 0) ans += MOD;
+	cout << ans << nl;
+
+	return 0;
+}
