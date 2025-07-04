@@ -1,0 +1,47 @@
+// In the name of Alah, the most merciful, the most gracious
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define mh ios::sync_with_stdio(false); cin.tie(0);
+#define nl '\n'
+#define MOD 1000000007
+
+const int N = 1e5 + 5;
+
+int main()
+{
+	mh
+	int d;
+	string num;
+	cin >> num >> d;
+	int k = num.size();
+
+	// dp[pos][sum][tight]
+	// pos  = current digit position
+	// sum  = current sum % d
+	// tight= 0 → prefix equal, 1 → already less than prefix (free to choose)
+	int dp[k + 1][d + 1][2] = {};
+	dp[0][0][0] = 1; // base case: 0 digits, sum = 0, tight = 0
+
+	for (int pos = 0; pos < k; ++pos) {
+		for (int sum = 0; sum < d; ++sum) {
+			for (int small = 0; small <= 1; ++small) {
+				int limit = small ? 9 : num[pos] - '0'; // choose up to digit in num[pos] if not already small
+				for (int dig = 0; dig <= limit; ++dig) {
+					int newSmall = small | (dig < limit);     // becomes loose if we use a smaller digit
+					int newSum = (sum + dig) % d;
+					dp[pos + 1][newSum][newSmall] += dp[pos][sum][small];
+					if (dp[pos + 1][newSum][newSmall] >= MOD)
+						dp[pos + 1][newSum][newSmall] -= MOD;
+				}
+			}
+		}
+	}
+
+	// Total ways to reach sum % d == 0, subtract 1 to exclude number "0"
+	int ans = dp[k][0][0] + dp[k][0][1] - 1;
+	if (ans < 0) ans += MOD;
+
+	cout << ans << nl;
+	return 0;
+}
