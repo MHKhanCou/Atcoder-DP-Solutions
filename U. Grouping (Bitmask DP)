@@ -1,0 +1,56 @@
+// In the name of Alah, the most merciful, the most gracious
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define pb push_back
+#define vl vector<ll>
+#define mh ios::sync_with_stdio(false); cin.tie(0);
+#define tst int t;cin>>t;while(t--)
+#define nl '\n'
+#define coutv(v) for(auto it:v)cout<<it<<' ';cout<<nl;
+#define F first
+#define S second
+
+const int B = 16;
+const int N = (1 << B);
+ll a[B][B];       // a[i][j]: value for pair (i, j)
+ll dp[N];         // dp[mask]: max score for subset mask
+ll SUM[N];        // SUM[mask]: sum of internal pairs in group mask
+ll n;
+
+// DP to compute maximum sum by partitioning `mask` into disjoint groups
+ll solve(int mask) {
+	if (!mask) return 0;  // empty set => zero score
+	ll &ans = dp[mask];
+	if (~ans) return ans;
+	ans = 0;
+	for (int s = mask; s; s = (s - 1) & mask) {
+		int rem = mask ^ s;  // remaining elements
+		ans = max(ans, SUM[s] + solve(rem));
+	}
+	return ans;
+}
+
+int main()
+{
+	cin >> n;
+	for (int i = 0; i < n; ++i)
+		for (int j = 0; j < n; ++j)
+			cin >> a[i][j];
+
+	// Precompute SUM[mask] = total value of internal pairs in group 'mask'
+	for (int mask = 1; mask < (1 << n); ++mask) {
+		int lsb = mask & -mask;                // least significant bit
+		int bit = __builtin_ctz(lsb);          // index of lsb
+		int rest = mask ^ (1 << bit);          // mask without 'bit'
+		SUM[mask] = SUM[rest];
+		for (int j = 0; j < n; ++j) {
+			if (rest & (1 << j)) {
+				SUM[mask] += a[bit][j];
+			}
+		}
+	}
+
+	memset(dp, -1, sizeof(dp));
+	cout << solve((1 << n) - 1) << nl;
+}
